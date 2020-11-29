@@ -3,6 +3,7 @@ import React, { useCallback, useMemo } from 'react'
 import ReactGA from 'react-ga'
 import { useDispatch } from 'react-redux'
 import { Text } from 'rebass'
+import styled from 'styled-components'
 import { AppDispatch } from '../../state'
 import { useRemovePopup } from '../../state/application/hooks'
 import { acceptListUpdate } from '../../state/lists/actions'
@@ -11,6 +12,11 @@ import listVersionLabel from '../../utils/listVersionLabel'
 import { ButtonSecondary } from '../Button'
 import { AutoColumn } from '../Column'
 import { AutoRow } from '../Row'
+
+export const ChangesList = styled.ul`
+  max-height: 400px;
+  overflow: auto;
+`
 
 export default function ListUpdatePopup({
   popKey,
@@ -64,29 +70,31 @@ export default function ListUpdatePopup({
                 An update is available for the token list &quot;{oldList.name}&quot; (
                 {listVersionLabel(oldList.version)} to {listVersionLabel(newList.version)}).
               </Text>
-              <ul>
+              <ChangesList>
                 {tokensAdded.length > 0 ? (
                   <li>
-                    {tokensAdded.map(token => (
-                      <strong key={`${token.chainId}-${token.address}`} title={token.address}>
-                        {token.symbol}
-                      </strong>
+                    {tokensAdded.map((token, i) => (
+                      <React.Fragment key={`${token.chainId}-${token.address}`}>
+                        <strong title={token.address}>{token.symbol}</strong>
+                        {i === tokensAdded.length - 1 ? null : ', '}
+                      </React.Fragment>
                     ))}{' '}
                     added
                   </li>
                 ) : null}
                 {tokensRemoved.length > 0 ? (
                   <li>
-                    {tokensRemoved.map(token => (
-                      <strong key={`${token.chainId}-${token.address}`} title={token.address}>
-                        {token.symbol}
-                      </strong>
+                    {tokensRemoved.map((token, i) => (
+                      <React.Fragment key={`${token.chainId}-${token.address}`}>
+                        <strong title={token.address}>{token.symbol}</strong>
+                        {i === tokensRemoved.length - 1 ? null : ', '}
+                      </React.Fragment>
                     ))}{' '}
                     removed
                   </li>
                 ) : null}
                 {numTokensChanged > 0 ? <li>{numTokensChanged} tokens updated</li> : null}
-              </ul>
+              </ChangesList>
             </div>
             <AutoRow>
               <div style={{ flexGrow: 1, marginRight: 12 }}>
